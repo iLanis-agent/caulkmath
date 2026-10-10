@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caulk math - calculators</title>
+<style>
+  :root { --accent: #3e6e8e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #f4f6f7; color: #1f2428; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #d8dee2; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #5c6a72; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #bfc9cf; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.12); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #7d8589; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Caulk math</h1>
+  <p class="lede">How much sealant the joint really takes. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Bead plan</h2>
+      <p class="hint">Length, width and depth become milliliters and tubes.</p>
+      <label for="b-l">Joint length (m)</label>
+      <input id="b-l" type="number" value="12" min="0" step="0.5">
+      <label for="b-w">Bead width (mm)</label>
+      <input id="b-w" type="number" value="5" min="0" step="1">
+      <label for="b-d">Bead depth (mm)</label>
+      <input id="b-d" type="number" value="5" min="0" step="1">
+      <button id="b-go">Plan the bead</button>
+      <div class="out" id="b-out"></div>
+    </section>
+    <section>
+      <h2>Joint plan</h2>
+      <p class="hint">Openings become total meters of joint.</p>
+      <label for="j-w">Opening width (m)</label>
+      <input id="j-w" type="number" value="1.2" min="0" step="0.1">
+      <label for="j-h">Opening height (m)</label>
+      <input id="j-h" type="number" value="1.5" min="0" step="0.1">
+      <label for="j-n">Openings</label>
+      <input id="j-n" type="number" value="3" min="0" step="1">
+      <button id="j-go">Measure the joints</button>
+      <div class="out" id="j-out"></div>
+    </section>
+    <section>
+      <h2>Cure plan</h2>
+      <p class="hint">Bead depth becomes a cure window.</p>
+      <label for="c-d">Bead depth (mm)</label>
+      <input id="c-d" type="number" value="5" min="0" step="1">
+      <button id="c-go">Estimate the cure</button>
+      <div class="out" id="c-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/caulkmath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('b-go').addEventListener('click', function(){
+  show('b-out', CaulkMath.beadPlan(num('b-l'),num('b-w'),num('b-d')), CaulkMath.renderBead);
+});
+document.getElementById('j-go').addEventListener('click', function(){
+  show('j-out', CaulkMath.jointPlan(num('j-w'),num('j-h'),num('j-n')), CaulkMath.renderJoint);
+});
+document.getElementById('c-go').addEventListener('click', function(){
+  show('c-out', CaulkMath.curePlan(num('c-d')), CaulkMath.renderCure);
+});
+</script>
+</body>
+</html>
